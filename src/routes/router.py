@@ -14,12 +14,12 @@ async def health_check(request: Request):
     return {"status": "API is running"}
 
 
-@router.get("/papers/{arxiv_id}", response_model=PaperMetadata, status_code=status.HTTP_200_OK)
+@router.get("/papers/{arxiv_id}/metadata", response_model=PaperMetadata)
 async def get_paper_metadata(
-    arxiv_id: str,
-    fetch_service_client: FetchServiceClient = Depends(get_fetch_service_client),
-) -> PaperMetadata:
+    arxiv_id: str, 
+    fetch_srevice_client: FetchServiceClient = Depends(get_fetch_service_client)):
     """
-    Fetch arXiv metadata for a paper by its arXiv id.
+    Fetches metadata for a paper given its arXiv ID.
     """
-    return await fetch_service_client.fetch_paper_metadata(arxiv_id)
+    metadata = await fetch_srevice_client.fetch_paper_metadata(arxiv_id)
+    return metadata

@@ -5,11 +5,8 @@ from src.services.FetchService.schemas import FetchedPaper, PaperMetadata
 
 
 class FetchServiceClient:
-    """Coordinates metadata lookup and PDF download for a paper source.
-
-    Depends only on the MetadataFetcher/PdfDownloader abstractions, so swapping
-    the paper source (e.g. arXiv -> Semantic Scholar) means adding a new
-    implementation, not modifying this class.
+    """
+    Coordinates metadata lookup and PDF download for a paper source.
     """
 
     def __init__(
@@ -37,6 +34,7 @@ class FetchServiceClient:
     async def fetch_paper(self, paper_id: str) -> FetchedPaper:
         metadata = await self._metadata_fetcher.fetch(paper_id)
         pdf_bytes = await self._pdf_downloader.download(metadata.pdf_url)
+        
         return FetchedPaper(metadata=metadata, pdf_bytes=pdf_bytes)
 
     async def download_pdf(self, pdf_url: str) -> bytes:
