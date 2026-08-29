@@ -2,8 +2,6 @@ from src.exceptions.base import AppError
 
 
 class FetchServiceError(AppError):
-    """Base class for all FetchService errors (e.g. arXiv/network failures)."""
-
     code = "fetch_service_error"
     status_code = 502
 
