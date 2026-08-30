@@ -7,8 +7,12 @@ services:
       - .env
     environment:
       DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      OPENSEARCH_HOST: opensearch
+      OPENSEARCH_PORT: 9200
     depends_on:
       db:
+        condition: service_healthy
+      opensearch:
         condition: service_healthy
     volumes:
       - ./src:/app/src
@@ -29,5 +33,22 @@ services:
       timeout: 5s
       retries: 5
 
+  opensearch:
+    image: opensearchproject/opensearch:2.19.1
+    environment:
+      discovery.type: single-node
+      DISABLE_SECURITY_PLUGIN: "true"
+      OPENSEARCH_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
 volumes:
   pgdata:
+  opensearch_data:
