@@ -5,19 +5,28 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.config import get_settings
+from src.database import init_db
 from src.exceptions import register_exception_handlers
 from src.routes import router
+from src.services.ChunkingService.factory import create_chunking_service_client
 from src.services.FetchService.factory import create_fetch_service_client
+from src.services.IndexingService.factory import create_indexing_service_client
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
+    init_db()
+
     app.state.fetch_service_client = create_fetch_service_client(settings)
+    app.state.chunking_service_client = create_chunking_service_client(settings)
+    app.state.indexing_service_client = create_indexing_service_client(settings)
+    await app.state.indexing_service_client.ensure_index()
 
     yield
 
     await app.state.fetch_service_client.aclose()
+    await app.state.indexing_service_client.aclose()
 
 
 app = FastAPI(
