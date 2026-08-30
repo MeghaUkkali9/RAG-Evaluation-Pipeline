@@ -41,9 +41,3 @@ class FetchServiceClient:
         pdf_bytes = await self._pdf_downloader.download(metadata.pdf_url)
 
         return FetchedPaper(metadata=metadata, pdf_bytes=pdf_bytes)
-
-    async def download_pdf(self, pdf_url: str) -> bytes:
-        return await self._pdf_downloader.download(pdf_url)
-    
-    async def fetch_and_store_paper_metadata(arxiv_id : str) -> PaperMetadata:
-        
