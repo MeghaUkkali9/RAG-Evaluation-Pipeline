@@ -1,0 +1,302 @@
+[
+  {
+    "query": "What attention variant does this paper propose, and what is its purpose within the architecture?",
+    "arxiv_id": "1706.03762",
+    "expected_section_title": "3.2 Attention",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What datasets were used for training the model, and how were they constructed?",
+    "arxiv_id": "1706.03762",
+    "expected_section_title": "5.1 Training Data and Batching",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What advantages does the Transformer model have over traditional recurrent neural networks according to the authors?",
+    "arxiv_id": "1706.03762",
+    "expected_section_title": "4 Why Self-Attention",
+    "source": "llm_draft"
+  },
+  {
+    "query": "How does the learning rate change during the training process of the model?",
+    "arxiv_id": "1706.03762",
+    "expected_section_title": "5.3 Optimizer",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What challenges are addressed by the Transformer when applied to English constituency parsing?",
+    "arxiv_id": "1706.03762",
+    "expected_section_title": "6.3 English Constituency Parsing",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What specific optimization strategies does the Advanced RAG paradigm employ to enhance retrieval quality beyond the Naive RAG approach?",
+    "arxiv_id": "2312.10997",
+    "expected_section_title": "B. Advanced RAG",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What are the core tasks of RAG as identified in the evaluation of its applications, and how does question answering integrate with them?",
+    "arxiv_id": "2312.10997",
+    "expected_section_title": "A. Downstream Task",
+    "source": "llm_draft"
+  },
+  {
+    "query": "How does the Modular RAG architecture provide greater flexibility compared to its predecessors, and what specific innovations does it introduce?",
+    "arxiv_id": "2312.10997",
+    "expected_section_title": "C. Modular RAG",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What key challenges are highlighted regarding the noise or contradictory information during retrieval that could impact the quality of RAG's output?",
+    "arxiv_id": "2312.10997",
+    "expected_section_title": "B. RAG Robustness",
+    "source": "llm_draft"
+  },
+  {
+    "query": "In which ways does the RAG process address the issue of context curation to avoid overwhelming the language model with redundant information?",
+    "arxiv_id": "2312.10997",
+    "expected_section_title": "A. Context Curation",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What are the three main steps involved in constructing a Knowledge Graph as mentioned in the paper?",
+    "arxiv_id": "2408.04948",
+    "expected_section_title": "2.1 VectorRAG",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What specific challenges do traditional RAG methods face when applied to financial documents, according to the section on their contributions?",
+    "arxiv_id": "2408.04948",
+    "expected_section_title": "1.1 Prior Work and Our Contribution",
+    "source": "llm_draft"
+  },
+  {
+    "query": "How does the HybridRAG technique affect the precision of the generated response based on the source context mentioned in the section discussing it?",
+    "arxiv_id": "2408.04948",
+    "expected_section_title": "4.4 HybridRAG",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What datasets were found unsuitable for the experiments and why, as detailed in the section on data description?",
+    "arxiv_id": "2408.04948",
+    "expected_section_title": "3 DATA DESCRIPTION",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What scores did GraphRAG and HybridRAG achieve in terms of faithfulness during evaluation, and how does this compare to VectorRAG?",
+    "arxiv_id": "2408.04948",
+    "expected_section_title": "5 RESULTS",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What are the applications of AI Agents mentioned in the study, particularly in the context of customer support automation?",
+    "arxiv_id": "2505.10468",
+    "expected_section_title": "4. Application of AI Agents and Agentic AI",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What unique challenges are associated with Agentic AI systems that differentiate them from AI Agents?",
+    "arxiv_id": "2505.10468",
+    "expected_section_title": "5. Challenges and limitations in AI Agents and Agentic AI",
+    "source": "llm_draft"
+  },
+  {
+    "query": "How do LLMs and LIMs contribute to the operational capabilities of AI Agents as discussed in this review?",
+    "arxiv_id": "2505.10468",
+    "expected_section_title": "2.1. Language models as the engine for AI Agent progression",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What methodology was used to develop the review and how does it ensure a comprehensive understanding of AI Agents and Agentic AI?",
+    "arxiv_id": "2505.10468",
+    "expected_section_title": "1.1. Methodology overview",
+    "source": "llm_draft"
+  },
+  {
+    "query": "In what ways do AI Agents differ from traditional automation scripts according to the foundational definitions provided?",
+    "arxiv_id": "2505.10468",
+    "expected_section_title": "2. Foundational understanding of AI Agents",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What problem do Long Short-Term Memory Units (LSTMs) address in the context of RNNs, and what are their key structural components?",
+    "arxiv_id": "1912.05911",
+    "expected_section_title": "4 Long Short-Term Memory Units (LSTMs)",
+    "source": "llm_draft"
+  },
+  {
+    "query": "How does the Attention Mechanism enhance sequence modeling compared to traditional RNN architectures?",
+    "arxiv_id": "1912.05911",
+    "expected_section_title": "8 Attention Mechanism & Transformer",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What are the effects of vanishing and exploding gradients in RNNs, and how do they impact learning over long sequences?",
+    "arxiv_id": "1912.05911",
+    "expected_section_title": "3 Problems of RNNs",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What constitutes the Encoder-Decoder Architecture in RNNs, and how does it facilitate the creation of Seq2Seq models?",
+    "arxiv_id": "1912.05911",
+    "expected_section_title": "7 Encoder-Decoder Architecture & Sequence to Sequence (seq2seq)",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What limitation of traditional RNNs is addressed by Bidirectional Recurrent Neural Networks (BRNNs), and why is this important for language modeling?",
+    "arxiv_id": "1912.05911",
+    "expected_section_title": "6 Bidirectional Recurrent Neural Networks (BRNNs)",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What are reflection tokens and how do they signal the need for retrieval or confirm output relevance in the Self-RAG framework?",
+    "arxiv_id": "2310.11511",
+    "expected_section_title": "3 SELF-RAG: LEARNING TO RETRIEVE, GENERATE AND CRITIQUE",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What specific tasks and benchmarks were used to evaluate the performance of Self-RAG compared to baselines, and what metrics were employed?",
+    "arxiv_id": "2310.11511",
+    "expected_section_title": "4.1 TASKS AND DATASETS",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What limitations do the authors acknowledge regarding the capability of Self-RAG to fully support its outputs with references?",
+    "arxiv_id": "2310.11511",
+    "expected_section_title": "ETHICAL CONCERNS",
+    "source": "llm_draft"
+  },
+  {
+    "query": "How does the Self-RAG framework differ from common RAG approaches, particularly in terms of passage retrieval and output generation?",
+    "arxiv_id": "2310.11511",
+    "expected_section_title": "3 SELF-RAG: LEARNING TO RETRIEVE, GENERATE AND CRITIQUE",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What are the specific training approaches used for the critic model within the Self-RAG framework, including any challenges faced during manual annotation?",
+    "arxiv_id": "2310.11511",
+    "expected_section_title": "3.2.1 TRAINING THE CRITIC MODEL",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What types of feedback signals can Reflexion agents incorporate into their learning process?",
+    "arxiv_id": "2303.11366",
+    "expected_section_title": "3 Reflexion: reinforcement via verbal reflection",
+    "source": "llm_draft"
+  },
+  {
+    "query": "How does Reflexion improve performance in decision-making tasks in the ALFWorld environment compared to baseline methods?",
+    "arxiv_id": "2303.11366",
+    "expected_section_title": "4 Experiments",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What is a significant limitation of the Reflexion framework as discussed in the paper?",
+    "arxiv_id": "2303.11366",
+    "expected_section_title": "5 Limitations",
+    "source": "llm_draft"
+  },
+  {
+    "query": "In what ways does the Reflexion framework's design seek to overcome challenges faced by traditional reinforcement learning methods?",
+    "arxiv_id": "2303.11366",
+    "expected_section_title": "1 Introduction",
+    "source": "llm_draft"
+  },
+  {
+    "query": "Which specific datasets were used to evaluate Reflexion's performance in programming tasks, and what improvement percentages were observed?",
+    "arxiv_id": "2303.11366",
+    "expected_section_title": "4.3 Programming",
+    "source": "llm_draft"
+  },
+  {
+    "query": "How do generative agents in Smallville leverage past experiences to inform their daily planning and decision-making, and what challenges do they face in maintaining coherence over time?",
+    "arxiv_id": "2304.03442",
+    "expected_section_title": "4 GENERATIVE AGENT ARCHITECTURE",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What specific methods does the paper identify for defining and measuring believable proxies of human behavior in generative agents, and how do these methods compare to previous approaches?",
+    "arxiv_id": "2304.03442",
+    "expected_section_title": "2.2 Believable Proxies of Human Behavior",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What insights does the evaluation reveal about the differences in believability between the full generative agent architecture and the ablated versions when assessed by human raters?",
+    "arxiv_id": "2304.03442",
+    "expected_section_title": "6.5 Results",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What are some examples of emergent social behaviors exhibited by the generative agents in Smallville, particularly related to information diffusion and relationship formation?",
+    "arxiv_id": "2304.03442",
+    "expected_section_title": "7.1 Emergent Social Behaviors",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What ethical considerations does the paper mention regarding the potential risks of users forming parasocial relationships with generative agents?",
+    "arxiv_id": "2304.03442",
+    "expected_section_title": "8.3 Ethics and Societal Impact",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What are the constraints imposed on the tools used in Toolformer, particularly regarding the input and output formats?",
+    "arxiv_id": "2302.04761",
+    "expected_section_title": "3 Tools",
+    "source": "llm_draft"
+  },
+  {
+    "query": "How does Toolformer define the inputs and outputs for each API it utilizes?",
+    "arxiv_id": "2302.04761",
+    "expected_section_title": "2 Approach",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What specific performance improvements did Toolformer achieve on the SQuAD subset of the LAMA benchmark compared to GPT-J?",
+    "arxiv_id": "2302.04761",
+    "expected_section_title": "4.2.1 LAMA",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What is a key limitation mentioned in the paper regarding Toolformer's ability to use APIs?",
+    "arxiv_id": "2302.04761",
+    "expected_section_title": "7 Limitations",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What evidence is provided in the paper to support the conclusion that Toolformer improves upon baseline models in multilingual question answering tasks?",
+    "arxiv_id": "2302.04761",
+    "expected_section_title": "4.2.4 Multilingual Question Answering",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What are the implications of using reasoning traces in ReAct for the performance on multi-hop question answering tasks like HotPotQA and FEVER?",
+    "arxiv_id": "2210.03629",
+    "expected_section_title": "3.3 RESULTS AND OBSERVATIONS",
+    "source": "llm_draft"
+  },
+  {
+    "query": "How does ReAct address issues of hallucination and error propagation prevalent in chain-of-thought reasoning?",
+    "arxiv_id": "2210.03629",
+    "expected_section_title": "3 KNOWLEDGE-INTENSIVE REASONING TASKS",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What limitations does the author mention regarding complex tasks with large action spaces in ReAct?",
+    "arxiv_id": "2210.03629",
+    "expected_section_title": "6 CONCLUSION",
+    "source": "llm_draft"
+  },
+  {
+    "query": "What specific interactive decision-making tasks were used to evaluate the effectiveness of ReAct, and how does it perform on these tasks compared to traditional methods?",
+    "arxiv_id": "2210.03629",
+    "expected_section_title": "4 DECISION MAKING TASKS",
+    "source": "llm_draft"
+  },
+  {
+    "query": "In the context of human-machine collaboration, how does ReAct facilitate easier editing of reasoning traces compared to previous methods?\n",
+    "arxiv_id": "2210.03629",
+    "expected_section_title": "A.3 HUMAN-IN-THE-LOOP BEHAVIOR CORRECTION ON ALFWORLD",
+    "source": "llm_draft"
+  }
+]

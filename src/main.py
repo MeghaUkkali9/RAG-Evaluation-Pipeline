@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.config import get_settings
 from src.database import init_db
 from src.exceptions import register_exception_handlers
+from src.models import experiment_run, paper  # noqa: F401 (registers tables on Base.metadata)
 from src.routes import router
 from src.services.ChunkingService.factory import create_chunking_service_client
 from src.services.FetchService.factory import create_fetch_service_client
