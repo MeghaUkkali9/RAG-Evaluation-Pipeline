@@ -9,24 +9,36 @@ class SectionAwareChunker:
     - A section that's a reasonable size becomes one chunk as-is.
     - Small sections (e.g. a two-line "Limitations" section) are merged
       with the small sections next to them, so we don't index near-empty
-      chunks.
+      chunks - unless their title is in `protected_section_titles`, since
+      some short sections (Abstract, Conclusion) are high-value on their
+      own and shouldn't get diluted by merging.
     - Oversized sections (e.g. a long "Experiments" section) are split
       further with a sliding word window, but the window never crosses
       into the next section - that would defeat the point of chunking
       by section in the first place.
-    - Every chunk starts with the paper title and section title, so a
-      chunk still makes sense to a retriever even without its neighbors.
+    - Every chunk starts with the paper title (and, if `include_abstract`
+      is set, the abstract) plus its section title, so a chunk still
+      makes sense to a retriever even without its neighbors.
     """
 
-    def __init__(self, min_section_words: int, max_section_words: int, overlap_words: int):
+    def __init__(
+        self,
+        min_section_words: int,
+        max_section_words: int,
+        overlap_words: int,
+        include_abstract: bool = False,
+        protected_section_titles: frozenset[str] = frozenset(),
+    ):
         if overlap_words >= max_section_words:
             raise ValueError("overlap_words must be smaller than max_section_words")
 
         self._min_words = min_section_words
         self._max_words = max_section_words
         self._overlap_words = overlap_words
+        self._include_abstract = include_abstract
+        self._protected_titles = {title.lower() for title in protected_section_titles}
 
-    def chunk(self, paper_title: str, parsed: ParsedDocument) -> list[Chunk]:
+    def chunk(self, paper_title: str, abstract: str, parsed: ParsedDocument) -> list[Chunk]:
         sections = [s for s in parsed.sections if s.content.strip()]
 
         if not sections:
@@ -34,7 +46,7 @@ class SectionAwareChunker:
             # formatted PDF) - fall back to chunking the raw text as one
             # big "Document" section.
             fallback = Section(title="Document", content=parsed.raw_text)
-            return self._number(self._split_section(paper_title, fallback))
+            return self._number(self._split_section(paper_title, abstract, fallback))
 
         chunks: list[Chunk] = []
         small_sections: list[Section] = []
@@ -43,16 +55,19 @@ class SectionAwareChunker:
             if not small_sections:
                 return
             merged = self._merge_sections(small_sections)
-            chunks.extend(self._split_section(paper_title, merged))
+            chunks.extend(self._split_section(paper_title, abstract, merged))
             small_sections.clear()
 
         for section in sections:
-            if len(section.content.split()) < self._min_words:
+            is_small = len(section.content.split()) < self._min_words
+            is_protected = section.title.lower() in self._protected_titles
+
+            if is_small and not is_protected:
                 small_sections.append(section)
                 continue
 
             flush_small_sections()
-            chunks.extend(self._split_section(paper_title, section))
+            chunks.extend(self._split_section(paper_title, abstract, section))
 
         flush_small_sections()
         return self._number(chunks)
@@ -62,7 +77,7 @@ class SectionAwareChunker:
         combined_content = "\n\n".join(s.content for s in sections)
         return Section(title=combined_title, content=combined_content)
 
-    def _split_section(self, paper_title: str, section: Section) -> list[Chunk]:
+    def _split_section(self, paper_title: str, abstract: str, section: Section) -> list[Chunk]:
         """Turn one section into one or more chunks, sliding a word window
         over it only if it's bigger than max_section_words."""
         words = section.content.split()
@@ -73,10 +88,14 @@ class SectionAwareChunker:
             for start in range(0, len(words), step)
         ]
 
-        return [self._make_chunk(paper_title, section.title, window) for window in windows]
+        return [self._make_chunk(paper_title, abstract, section.title, window) for window in windows]
 
-    def _make_chunk(self, paper_title: str, section_title: str, content: str) -> Chunk:
-        header = f"{paper_title}\n\nSection: {section_title}\n\n"
+    def _make_chunk(self, paper_title: str, abstract: str, section_title: str, content: str) -> Chunk:
+        header = f"{paper_title}\n\n"
+        if self._include_abstract and abstract:
+            header += f"Abstract: {abstract}\n\n"
+        header += f"Section: {section_title}\n\n"
+
         # chunk_index is filled in by _number() once the full list is known.
         return Chunk(chunk_index=-1, section_title=section_title, content=header + content)
 

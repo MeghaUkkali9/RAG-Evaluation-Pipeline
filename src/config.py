@@ -16,9 +16,7 @@ class Settings(BaseSettings):
     fetch_http_connect_timeout_seconds: float = 10.0
     pdf_cache_dir: str = ".cache/pdfs"
     database_url: str = "postgresql+psycopg2://rag_user:rag_user@localhost:5432/rag_pipeline"
-    chunk_min_words: int = 100
-    chunk_max_words: int = 400
-    chunk_overlap_words: int = 50
+    chunking_strategy: str = "section_aware_academic"
 
     pdf_max_pages: int = 100
     pdf_max_file_size_mb: int = 50

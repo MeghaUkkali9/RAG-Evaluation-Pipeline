@@ -22,9 +22,11 @@ class IngestionService:
         fetched = await self._fetch_service_client.fetch_paper(arxiv_id)
 
         parsed = await self._chunking_service_client.parse(fetched.pdf_bytes)
-        self._paper_repository.save_paper(fetched.metadata, parsed.raw_text)
+        self._paper_repository.save_paper(fetched.metadata, parsed)
 
-        chunks = self._chunking_service_client.chunk(fetched.metadata.title, parsed)
+        chunks = self._chunking_service_client.chunk(
+            fetched.metadata.title, fetched.metadata.abstract, parsed
+        )
         await self._indexing_service_client.index_paper_chunks(fetched.metadata.arxiv_id, chunks)
 
         return fetched.metadata

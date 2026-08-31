@@ -16,3 +16,4 @@ class Paper(Base):
     pdf_url: Mapped[str] = mapped_column(Text)
     published_date: Mapped[str | None] = mapped_column(String, nullable=True)
     raw_text: Mapped[str] = mapped_column(Text)
+    sections: Mapped[list[dict]] = mapped_column(JSON)

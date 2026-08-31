@@ -8,7 +8,7 @@ class DocumentParser(Protocol):
 
 
 class SectionChunker(Protocol):
-    def chunk(self, paper_title: str, parsed: ParsedDocument) -> list[Chunk]: ...
+    def chunk(self, paper_title: str, abstract: str, parsed: ParsedDocument) -> list[Chunk]: ...
 
 
 class ChunkingServiceClient:
@@ -19,5 +19,5 @@ class ChunkingServiceClient:
     async def parse(self, pdf_bytes: bytes) -> ParsedDocument:
         return await self._parser.parse(pdf_bytes)
 
-    def chunk(self, paper_title: str, parsed: ParsedDocument) -> list[Chunk]:
-        return self._chunker.chunk(paper_title, parsed)
+    def chunk(self, paper_title: str, abstract: str, parsed: ParsedDocument) -> list[Chunk]:
+        return self._chunker.chunk(paper_title, abstract, parsed)
