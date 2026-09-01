@@ -32,12 +32,21 @@ class DoclingParser:
         )
         self._max_pages = max_pages
         self._max_file_size_bytes = max_file_size_mb * 1024 * 1024
+        # One DoclingParser (and one DocumentConverter) is shared by every
+        # request in the app so it does not have to reload its models on
+        # each call. That also means two concurrent PDF parses would call
+        # convert() on the same converter from two different threads at
+        # once. This lock forces parses to happen one at a time, since
+        # there is no guarantee Docling's converter is safe to use from
+        # more than one thread at the same time.
+        self._parse_lock = asyncio.Lock()
 
     async def parse(self, pdf_bytes: bytes) -> ParsedDocument:
         # Docling's parsing uses the CPU a lot and blocks while running, so
         # we run it in a separate thread here. Otherwise it would freeze
         # the whole async event loop while it works.
-        return await asyncio.to_thread(self._parse_sync, pdf_bytes)
+        async with self._parse_lock:
+            return await asyncio.to_thread(self._parse_sync, pdf_bytes)
 
     def _parse_sync(self, pdf_bytes: bytes) -> ParsedDocument:
         with tempfile.NamedTemporaryFile(suffix=".pdf") as tmp_file:

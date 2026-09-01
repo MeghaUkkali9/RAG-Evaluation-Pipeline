@@ -1,3 +1,4 @@
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from src.models.paper import Paper
@@ -27,6 +28,17 @@ class PaperRepository:
         )
 
         self._session.add(paper)
-        self._session.commit()
+
+        try:
+            self._session.commit()
+        except IntegrityError:
+            # Two requests can ingest the same paper at the same time - the
+            # database's unique constraint on arxiv_id stops the duplicate,
+            # but only one of the two commits can win. Instead of crashing
+            # the request that loses the race, roll back and just hand
+            # back the row the other request already saved.
+            self._session.rollback()
+            return self._session.query(Paper).filter(Paper.arxiv_id == metadata.arxiv_id).one()
+
         self._session.refresh(paper)
         return paper
