@@ -31,8 +31,8 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(
-        title="RAG Pipeline API",
-        description="RAG Pipeline API built using FastAPI.",
+        title="RAG Evaluation Pipeline API",
+        description="RAG Evaluation Pipeline API built using FastAPI.",
         version="1.0.0",
         lifespan=lifespan,
     )
@@ -47,4 +47,4 @@ app.add_middleware(
 
 register_exception_handlers(app)
 
-app.include_router(router, prefix="/api/v1", tags=["RAG Pipeline"])
+app.include_router(router, prefix="/api/v1", tags=["RAG Evaluation Pipeline"])

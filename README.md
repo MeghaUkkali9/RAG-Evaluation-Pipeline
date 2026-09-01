@@ -1,4 +1,4 @@
-# RAG Pipeline for arXiv Papers
+# RAG Evaluation Pipeline for arXiv Papers
 
 This project builds a RAG (Retrieval-Augmented Generation) pipeline for academic papers from arXiv, and includes a framework to test and compare different chunking and retrieval choices with real numbers, not guesses.
 
