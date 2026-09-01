@@ -9,12 +9,17 @@ class ExperimentRunRepository:
         self._session = session
 
     def save_result(self, result: ExperimentResult) -> ExperimentRun:
+        per_query = []
+        for pq in result.per_query:
+            per_query.append(pq.model_dump())
+
         run = ExperimentRun(
             name=result.config.name,
             config=result.config.model_dump(mode="json"),
             metrics={
                 "retrieval": result.retrieval.model_dump(),
                 "ops": result.ops.model_dump(),
+                "per_query": per_query,
             },
         )
 

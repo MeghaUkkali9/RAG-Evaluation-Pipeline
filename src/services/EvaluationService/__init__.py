@@ -6,8 +6,10 @@ from src.services.EvaluationService.schemas import (
     ExperimentResult,
     GoldenQuery,
     OpsMetrics,
+    PerQueryResult,
     RetrievalMetrics,
 )
+from src.services.EvaluationService.significance import SignificanceResult, bootstrap_compare
 
 __all__ = [
     "load_golden_queries",
@@ -17,5 +19,8 @@ __all__ = [
     "ExperimentResult",
     "GoldenQuery",
     "OpsMetrics",
+    "PerQueryResult",
     "RetrievalMetrics",
+    "SignificanceResult",
+    "bootstrap_compare",
 ]

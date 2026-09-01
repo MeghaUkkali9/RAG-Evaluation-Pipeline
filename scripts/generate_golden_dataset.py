@@ -1,15 +1,18 @@
-"""Draft a golden query set from ingested papers using an LLM.
+"""Uses an LLM to write a set of test questions from the papers we already
+ingested.
 
 Usage:
     python -m scripts.generate_golden_dataset
 
-Writes evaluation/golden_dataset.json. REVIEW THIS FILE BY HAND before
-trusting any experiment results computed against it - LLM-drafted questions
-can be too easy, ambiguous, or point at the wrong section.
+Writes evaluation/golden_dataset.json. READ THIS FILE BY HAND before you
+trust any experiment result that used it - the LLM can write questions
+that are too easy, not clear, or point at the wrong section.
 """
 
+import argparse
 import difflib
 import json
+import subprocess
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -62,27 +65,31 @@ def _build_sections_block(paper: Paper) -> str:
 
 
 def _resolve_section_title(expected_title: str, real_titles: set[str]) -> tuple[str, bool]:
-    """Returns (resolved_title, was_corrected). Two distinct failure modes
-    get auto-corrected here, each checked with a signal specific to it
-    rather than one loose fuzzy-match threshold:
+    """Returns (resolved_title, was_corrected). There are two different
+    ways the LLM's answer can be a bit wrong, so we check for each one
+    separately instead of using one loose "close enough" check for both:
 
-    - Typos: source PDFs regularly have them in their own headings (Docling
-      copies them verbatim), and the LLM tends to "fix" the spelling when it
-      references one. A high-similarity fuzzy match catches this safely.
-    - Truncation: the LLM sometimes shortens a long numbered heading (e.g.
-      "3 Problems of RNNs" for the real "3 Problems of RNNs: Vanishing &
-      Exploding Gradients"). This drops the fuzzy-match ratio too low to use
-      a single lower cutoff without risking false matches to unrelated
-      sections, so it's checked directly via prefix containment instead.
+    - Typo: the PDF itself often has a typo in a heading (Docling copies it
+      exactly as it is), and the LLM tends to "fix" the spelling when it
+      writes it out. A close-match check (fuzzy match) catches this fine.
+    - Shortened: the LLM sometimes cuts a long numbered heading short
+      (writes "3 Problems of RNNs" when the real one is "3 Problems of
+      RNNs: Vanishing & Exploding Gradients"). This makes the fuzzy match
+      score too low to catch with the same check above, without also
+      wrongly matching other, unrelated sections. So we check this one
+      directly: does a real title start with the LLM's version.
 
-    A title matching neither case is left as-is for manual review."""
+    If neither of these match, we leave it as it is, for a human to check
+    by hand."""
     if expected_title in real_titles:
         return expected_title, False
 
-    prefix_matches = sorted(
-        (title for title in real_titles if title.lower().startswith(expected_title.lower())),
-        key=len,
-    )
+    prefix_matches = []
+    for title in real_titles:
+        if title.lower().startswith(expected_title.lower()):
+            prefix_matches.append(title)
+    prefix_matches.sort(key=len)
+
     if prefix_matches:
         return prefix_matches[0], True
 
@@ -91,6 +98,19 @@ def _resolve_section_title(expected_title: str, real_titles: set[str]) -> tuple[
         return close_matches[0], True
 
     return expected_title, False
+
+
+def _has_uncommitted_changes(path: Path) -> bool:
+    """True if `path` has uncommitted changes, or is not tracked by git at
+    all. In both cases, writing over it could quietly lose review work that
+    is not saved anywhere else (this already happened once - see the
+    WARNING message below)."""
+    result = subprocess.run(
+        ["git", "status", "--porcelain", str(path)],
+        capture_output=True,
+        text=True,
+    )
+    return bool(result.stdout.strip())
 
 
 def draft_questions_for_paper(client: OpenAI, paper: Paper) -> list[dict]:
@@ -113,7 +133,15 @@ def draft_questions_for_paper(client: OpenAI, paper: Paper) -> list[dict]:
     return json.loads(response.choices[0].message.content)["questions"]
 
 
-def main() -> None:
+def main(force: bool = False) -> None:
+    if OUTPUT_PATH.exists() and not force and _has_uncommitted_changes(OUTPUT_PATH):
+        print(
+            f"WARNING: {OUTPUT_PATH} has uncommitted changes - probably your review edits. "
+            "Commit them first (git add/commit) so they aren't lost, then re-run. "
+            "Or pass --force to overwrite anyway."
+        )
+        return
+
     client = OpenAI()
     session = SessionLocal()
 
@@ -136,7 +164,9 @@ def main() -> None:
             print(f"Failed to draft questions for {paper.arxiv_id}: {e}")
             continue
 
-        section_titles = {section["title"] for section in paper.sections}
+        section_titles = set()
+        for section in paper.sections:
+            section_titles.add(section["title"])
 
         for item in drafted:
             drafted_title = item.get("expected_section_title")
@@ -171,4 +201,10 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--force", action="store_true", help="Overwrite even if there are uncommitted changes"
+    )
+    args = parser.parse_args()
+
+    main(force=args.force)
