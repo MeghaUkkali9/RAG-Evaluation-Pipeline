@@ -26,6 +26,8 @@ class Settings(BaseSettings):
     opensearch_index: str = "paper_chunks"
     opensearch_use_ssl: bool = False
 
+    embedding_model: str = "text-embedding-3-small"
+
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
