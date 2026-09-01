@@ -16,10 +16,14 @@ class ArxivMetadataFetcher:
         self._rate_limiter = rate_limiter
 
     async def fetch(self, paper_id: str) -> PaperMetadata:
+        
         async def send_request() -> httpx.Response:
+            
             await self._rate_limiter.wait()
+            
             response = await self._http_client.get(self._api_base, params={"id_list": paper_id})
             response.raise_for_status()
+            
             return response
 
         response = await retry_request(send_request)
@@ -28,6 +32,7 @@ class ArxivMetadataFetcher:
     def _parse(self, atom_xml: str, arxiv_id: str) -> PaperMetadata:
         root = ET.fromstring(atom_xml)
         entry = root.find("atom:entry", ATOM_NS)
+        
         if entry is None:
             raise ArxivEntryNotFoundError(arxiv_id)
 

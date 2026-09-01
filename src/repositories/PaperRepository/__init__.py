@@ -10,6 +10,10 @@ class PaperRepository:
         self._session = session
 
     def save_paper(self, metadata: PaperMetadata, parsed: ParsedDocument) -> Paper:
+        sections = []
+        for section in parsed.sections:
+            sections.append(section.model_dump())
+
         paper = Paper(
             arxiv_id=metadata.arxiv_id,
             title=metadata.title,
@@ -19,7 +23,7 @@ class PaperRepository:
             pdf_url=metadata.pdf_url,
             published_date=metadata.published_date,
             raw_text=parsed.raw_text,
-            sections=[section.model_dump() for section in parsed.sections],
+            sections=sections,
         )
 
         self._session.add(paper)

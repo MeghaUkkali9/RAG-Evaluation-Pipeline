@@ -1,11 +1,12 @@
-"""Compare chunking strategies against an already-ingested paper.
+"""Compares chunking strategies on one paper that is already ingested.
 
 Usage:
     python -m scripts.evaluate_chunking <arxiv_id>
 
-The paper must already be ingested (POST /papers/{arxiv_id}/ingest) so its
-raw text and sections are in Postgres - this script re-chunks that stored
-data with each strategy, it doesn't re-download or re-parse the PDF.
+The paper needs to be ingested already (POST /papers/{arxiv_id}/ingest), so
+its raw text and sections are already in Postgres. This script just re-cuts
+that saved data with each strategy - it does not download or parse the PDF
+again.
 """
 
 import argparse
@@ -24,7 +25,10 @@ def load_parsed_document(arxiv_id: str) -> tuple[Paper, ParsedDocument]:
     finally:
         session.close()
 
-    sections = [Section(**section) for section in paper.sections]
+    sections = []
+    for section in paper.sections:
+        sections.append(Section(**section))
+
     return paper, ParsedDocument(raw_text=paper.raw_text, sections=sections)
 
 

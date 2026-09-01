@@ -2,9 +2,9 @@ from enum import StrEnum
 
 from src.services.ChunkingService.section_chunker import SectionAwareChunker
 
-# Abstract and Conclusion carry outsized retrieval value relative to their
-# length, so the "academic" preset never lets them get merged away just
-# for being short.
+# Abstract and Conclusion are short but still important, so the "academic"
+# preset never merges them away with other small sections just because
+# they are short.
 ACADEMIC_PROTECTED_TITLES = frozenset({"abstract", "conclusion", "conclusions", "summary"})
 
 
@@ -20,11 +20,11 @@ def build_chunking_strategy(name: ChunkingStrategyName) -> SectionAwareChunker:
         return SectionAwareChunker(min_section_words=100, max_section_words=400, overlap_words=50)
 
     if name == ChunkingStrategyName.SECTION_AWARE_400_NO_OVERLAP:
-        # Isolates whether overlap adds anything on top of section-based
-        # cuts. Section boundaries are already real semantic edges, unlike
-        # the arbitrary cut points overlap is normally meant to protect
-        # against - if this scores the same as SECTION_AWARE_400, the
-        # overlap can be dropped for a smaller index at no retrieval cost.
+        # This checks if overlap even helps on top of section-based cuts.
+        # A section boundary is already a real break in the text, not an
+        # arbitrary cut point like overlap is normally there to protect.
+        # If this scores the same as SECTION_AWARE_400, we can drop the
+        # overlap and get a smaller index for free.
         return SectionAwareChunker(min_section_words=100, max_section_words=400, overlap_words=0)
 
     if name == ChunkingStrategyName.SECTION_AWARE_700:

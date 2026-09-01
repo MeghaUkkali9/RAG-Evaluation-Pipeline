@@ -11,14 +11,15 @@ from src.services.ChunkingService.schemas import ParsedDocument, Section
 
 logger = logging.getLogger(__name__)
 
-# Docling labels a text block as one of these when it's a heading rather
-# than body text. That's how we know where one section ends and the next
-# begins.
+# Docling gives a text block one of these labels when it's a heading, not
+# normal body text. This is how we find where one section ends and the
+# next one starts.
 HEADING_LABELS = {"title", "section_header"}
 
 
 class DoclingParser:
-    """Parses PDF bytes into full text plus a list of (heading, body) sections."""
+    """Parses PDF bytes and gives back the full text plus a list of
+    sections (heading + body text)."""
 
     def __init__(self, max_pages: int, max_file_size_mb: int):
         pipeline_options = PdfPipelineOptions(
@@ -33,8 +34,9 @@ class DoclingParser:
         self._max_file_size_bytes = max_file_size_mb * 1024 * 1024
 
     async def parse(self, pdf_bytes: bytes) -> ParsedDocument:
-        # Docling's conversion is CPU-bound and blocking, so we run it in a
-        # worker thread to avoid stalling the async event loop.
+        # Docling's parsing uses the CPU a lot and blocks while running, so
+        # we run it in a separate thread here. Otherwise it would freeze
+        # the whole async event loop while it works.
         return await asyncio.to_thread(self._parse_sync, pdf_bytes)
 
     def _parse_sync(self, pdf_bytes: bytes) -> ParsedDocument:
@@ -59,9 +61,9 @@ class DoclingParser:
             )
 
     def _extract_sections(self, document) -> list[Section]:
-        """Walk the parsed elements, splitting into a new section every time
-        a heading is seen. Text before the first heading becomes "Introduction".
-        """
+        """Goes through the parsed elements one by one, and starts a new
+        section every time it sees a heading. Any text before the first
+        heading is put under "Introduction"."""
         sections: list[Section] = []
         current_title = "Introduction"
         current_paragraphs: list[str] = []

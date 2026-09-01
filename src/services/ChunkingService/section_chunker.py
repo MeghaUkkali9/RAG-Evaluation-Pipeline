@@ -2,23 +2,19 @@ from src.services.ChunkingService.schemas import Chunk, ParsedDocument, Section
 
 
 class SectionAwareChunker:
-    """Turns a parsed paper into retrieval-sized chunks, splitting along
-    section boundaries instead of cutting text at an arbitrary word count.
-
+    """Turns a parsed paper into chunks that are good for retrieval by
+    cutting section boundaries.
     Rules:
-    - A section that's a reasonable size becomes one chunk as-is.
-    - Small sections (e.g. a two-line "Limitations" section) are merged
-      with the small sections next to them, so we don't index near-empty
-      chunks - unless their title is in `protected_section_titles`, since
-      some short sections (Abstract, Conclusion) are high-value on their
-      own and shouldn't get diluted by merging.
-    - Oversized sections (e.g. a long "Experiments" section) are split
-      further with a sliding word window, but the window never crosses
-      into the next section - that would defeat the point of chunking
-      by section in the first place.
-    - Every chunk starts with the paper title (and, if `include_abstract`
-      is set, the abstract) plus its section title, so a chunk still
-      makes sense to a retriever even without its neighbors.
+    - A section with a normal size becomes one chunk as it is.
+    - Small sections (like a two-line section) get merged
+      with the small sections next to them so I don't index empty or nearly empty
+      chunks unless the title is in protected_section_titles because
+      short sections such as Abstract, Conclusion are important on their own
+      and should not get merged into something else.
+    - Sections that are too big get split with a sliding word window 
+      but the window never goes into the next section.
+    - Every chunk starts with the paper title(and the abstract too if
+      include_abstract is on) plus its section title.
     """
 
     def __init__(
@@ -36,15 +32,24 @@ class SectionAwareChunker:
         self._max_words = max_section_words
         self._overlap_words = overlap_words
         self._include_abstract = include_abstract
-        self._protected_titles = {title.lower() for title in protected_section_titles}
+
+        protected_titles = set()
+        
+        for title in protected_section_titles:
+            protected_titles.add(title.lower())
+            
+        self._protected_titles = protected_titles
 
     def chunk(self, paper_title: str, abstract: str, parsed: ParsedDocument) -> list[Chunk]:
-        sections = [s for s in parsed.sections if s.content.strip()]
+        sections = []
+        for section in parsed.sections:
+            if section.content.strip():
+                sections.append(section)
 
         if not sections:
-            # Parser found no headings (e.g. a scanned or unusually
-            # formatted PDF) - fall back to chunking the raw text as one
-            # big "Document" section.
+            # Parser did not find any headings(for example a scanned PDF,
+            # or one with strange formatting) just treat the whole
+            # text as one big "Document" section instead of failing.
             fallback = Section(title="Document", content=parsed.raw_text)
             return self._number(self._split_section(paper_title, abstract, fallback))
 
@@ -73,22 +78,31 @@ class SectionAwareChunker:
         return self._number(chunks)
 
     def _merge_sections(self, sections: list[Section]) -> Section:
-        combined_title = " + ".join(s.title for s in sections)
-        combined_content = "\n\n".join(s.content for s in sections)
+        titles = []
+        contents = []
+        for section in sections:
+            titles.append(section.title)
+            contents.append(section.content)
+
+        combined_title = " + ".join(titles)
+        combined_content = "\n\n".join(contents)
         return Section(title=combined_title, content=combined_content)
 
     def _split_section(self, paper_title: str, abstract: str, section: Section) -> list[Chunk]:
-        """Turn one section into one or more chunks, sliding a word window
-        over it only if it's bigger than max_section_words."""
+        """Turns one section into one or more chunks. Only slides a word
+        window over it if the section is bigger than max_section_words."""
         words = section.content.split()
         step = self._max_words - self._overlap_words
 
-        windows = [
-            " ".join(words[start : start + self._max_words])
-            for start in range(0, len(words), step)
-        ]
+        windows = []
+        for start in range(0, len(words), step):
+            window_words = words[start : start + self._max_words]
+            windows.append(" ".join(window_words))
 
-        return [self._make_chunk(paper_title, abstract, section.title, window) for window in windows]
+        chunks = []
+        for window in windows:
+            chunks.append(self._make_chunk(paper_title, abstract, section.title, window))
+        return chunks
 
     def _make_chunk(self, paper_title: str, abstract: str, section_title: str, content: str) -> Chunk:
         header = f"{paper_title}\n\n"
@@ -96,8 +110,10 @@ class SectionAwareChunker:
             header += f"Abstract: {abstract}\n\n"
         header += f"Section: {section_title}\n\n"
 
-        # chunk_index is filled in by _number() once the full list is known.
         return Chunk(chunk_index=-1, section_title=section_title, content=header + content)
 
     def _number(self, chunks: list[Chunk]) -> list[Chunk]:
-        return [chunk.model_copy(update={"chunk_index": i}) for i, chunk in enumerate(chunks)]
+        numbered_chunks = []
+        for i, chunk in enumerate(chunks):
+            numbered_chunks.append(chunk.model_copy(update={"chunk_index": i}))
+        return numbered_chunks

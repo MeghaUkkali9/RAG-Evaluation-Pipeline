@@ -32,7 +32,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 app = FastAPI(
         title="RAG Pipeline API",
-        description="This is a RAG Pipeline API built using FastAPI.",
+        description="RAG Pipeline API built using FastAPI.",
         version="1.0.0",
         lifespan=lifespan,
     )

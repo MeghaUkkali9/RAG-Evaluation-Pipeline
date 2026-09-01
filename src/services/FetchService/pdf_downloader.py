@@ -1,11 +1,9 @@
 import hashlib
 from pathlib import Path
 from urllib.parse import urlparse
-
 import httpx
 
 from src.services.FetchService.retry import RateLimiter, retry_request
-
 
 class HttpPdfDownloader:
     def __init__(self, http_client: httpx.AsyncClient, rate_limiter: RateLimiter, cache_dir: Path):
@@ -25,7 +23,12 @@ class HttpPdfDownloader:
 
             async with self._http_client.stream("GET", pdf_url) as response:
                 response.raise_for_status()
-                return b"".join([chunk async for chunk in response.aiter_bytes()])
+
+                pdf_chunks = []
+                async for chunk in response.aiter_bytes():
+                    pdf_chunks.append(chunk)
+
+                return b"".join(pdf_chunks)
 
         pdf_bytes = await retry_request(send_request)
         cache_path.write_bytes(pdf_bytes)
